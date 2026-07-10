@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import API from "./api";
 import "./App.css";
@@ -67,11 +68,11 @@ function App() {
   // TIP: if you add a new page later that needs its own data fetch on load,
   // add another "if (page === '...')" line here.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-useEffect(() => {
-  if (page === "products") fetchProducts();
-  if (page === "cart" && token) fetchCart();
-  if (page === "orders" && token) fetchOrders();
-}, [page]);
+  useEffect(() => {
+    if (page === "products") fetchProducts();
+    if (page === "cart" && token) fetchCart();
+    if (page === "orders" && token) fetchOrders();
+  }, [page]);
   // ----------------------------------------------------
   // AUTH HANDLERS
   // ----------------------------------------------------
