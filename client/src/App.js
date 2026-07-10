@@ -66,12 +66,12 @@ function App() {
   // Runs whenever the active page changes — auto-loads the data that page needs.
   // TIP: if you add a new page later that needs its own data fetch on load,
   // add another "if (page === '...')" line here.
-  useEffect(() => {
-    if (page === "products") fetchProducts();
-    if (page === "cart" && token) fetchCart();
-    if (page === "orders" && token) fetchOrders();
-  }, [page]);
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+useEffect(() => {
+  if (page === "products") fetchProducts();
+  if (page === "cart" && token) fetchCart();
+  if (page === "orders" && token) fetchOrders();
+}, [page]);
   // ----------------------------------------------------
   // AUTH HANDLERS
   // ----------------------------------------------------
