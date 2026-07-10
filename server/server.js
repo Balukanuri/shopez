@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const connectDB = require("./config/db");
+const authRoutes = require("./routes/authRoutes");   // ADD THIS
 
 const app = express();
 
@@ -11,6 +12,8 @@ app.use(express.json());
 app.get("/", (req, res) => {
     res.send("ShopEZ Backend Running");
 });
+
+app.use("/api/auth", authRoutes);   // ADD THIS
 
 const PORT = process.env.PORT || 5000;
 
