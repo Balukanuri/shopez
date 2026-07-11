@@ -1,38 +1,502 @@
-.App {
-  text-align: center;
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
+
+/* ---------------------------------------------------------
+   DESIGN TOKENS
+   --------------------------------------------------------- */
+:root {
+  --bg: #F4F6FA;
+  --surface: #FFFFFF;
+  --surface-alt: #ECEFF5;
+  --ink: #12141C;
+  --ink-soft: #5B6274;
+  --ink-faint: #8B92A3;
+  --line: #DDE1EA;
+
+  --accent: #2B59FF;
+  --accent-dark: #1E42D6;
+  --accent-ink: #FFFFFF;
+
+  --ez: #C6F13A;
+  --ez-ink: #12141C;
+
+  --warn: #FF6B57;
+  --pending: #F5A623;
+  --shipped: #7C5CFF;
+  --delivered: #1FAA59;
+
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  --radius: 14px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 2px rgba(18, 20, 28, 0.04), 0 8px 24px rgba(18, 20, 28, 0.06);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+* {
+  box-sizing: border-box;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* ---------------------------------------------------------
+   APP SHELL
+   --------------------------------------------------------- */
+.app-shell {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* ---------------------------------------------------------
+   TOPBAR / NAV
+   --------------------------------------------------------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.brand-accent {
+  color: var(--accent);
+}
+
+.nav-pill {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.3rem;
+  box-shadow: var(--shadow);
+}
+
+.nav-btn {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  background: transparent;
+  border: none;
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.nav-btn:hover {
+  color: var(--ink);
+  background: var(--surface-alt);
+}
+
+.nav-btn.active {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* ---------------------------------------------------------
+   BUTTONS (general)
+   --------------------------------------------------------- */
+.btn {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  padding: 0.7rem 1.2rem;
+  cursor: pointer;
+  transition: transform 0.1s ease, background 0.15s ease;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.btn-primary:hover {
+  background: var(--accent-dark);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+}
+
+.btn-ghost:hover {
+  color: var(--ink);
+  border-color: var(--ink-faint);
+}
+
+.btn-text {
+  background: transparent;
+  color: var(--warn);
+  padding: 0.3rem 0.5rem;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* ---------------------------------------------------------
+   PAGE TITLES
+   --------------------------------------------------------- */
+.page-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 1.5rem;
+}
+
+/* ---------------------------------------------------------
+   AUTH FORMS (Login / Register)
+   --------------------------------------------------------- */
+.auth-page {
+  display: flex;
+  justify-content: center;
+  padding-top: 1.5rem;
+}
+
+.auth-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+  width: 100%;
+  max-width: 360px;
+}
+
+.field {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.field span {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-bottom: 0.35rem;
+}
+
+.field input {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.field input:focus {
+  border-color: var(--accent);
+}
+
+/* ---------------------------------------------------------
+   PRODUCT GRID
+   --------------------------------------------------------- */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.product-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
   display: flex;
   flex-direction: column;
+}
+
+.product-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(18, 20, 28, 0.06), 0 16px 32px rgba(18, 20, 28, 0.09);
+}
+
+.product-media {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: var(--surface-alt);
+  overflow: hidden;
+}
+
+.product-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.product-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.product-name {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.product-desc {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin: 0;
+  flex: 1;
+}
+
+.product-meta {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  justify-content: space-between;
 }
 
-.App-link {
-  color: #61dafb;
+.price {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 1.05rem;
+  color: var(--accent);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.stock-badge {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: var(--ez);
+  color: var(--ez-ink);
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+}
+
+.stock-badge.low {
+  background: var(--warn);
+  color: #fff;
+}
+
+/* ---------------------------------------------------------
+   EMPTY STATES
+   --------------------------------------------------------- */
+.empty-state {
+  background: var(--surface);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+.empty-state p {
+  margin: 0 0 1rem;
+}
+
+/* ---------------------------------------------------------
+   RECEIPT CARDS (Cart + Orders signature element)
+   --------------------------------------------------------- */
+.receipt-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 480px;
+}
+
+.receipt-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 1.5rem 1.5rem 1.25rem;
+  box-shadow: var(--shadow);
+}
+
+/* scalloped perforated edge, top and bottom */
+.receipt-card::before,
+.receipt-card::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 14px;
+  background-image: radial-gradient(circle at 10px 0, var(--bg) 7px, transparent 7.5px);
+  background-size: 20px 14px;
+  background-repeat: repeat-x;
+}
+
+.receipt-card::before {
+  top: -7px;
+}
+
+.receipt-card::after {
+  bottom: -7px;
+  transform: rotate(180deg);
+}
+
+.receipt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.receipt-id {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+  color: var(--ink-faint);
+  word-break: break-all;
+}
+
+.status-badge {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  margin-left: 0.75rem;
+  color: #fff;
+}
+
+.status-pending { background: var(--pending); }
+.status-confirmed { background: var(--accent); }
+.status-shipped { background: var(--shipped); }
+.status-delivered { background: var(--delivered); }
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed var(--line);
+  font-size: 0.9rem;
+}
+
+.receipt-row:last-of-type {
+  border-bottom: none;
+}
+
+.receipt-row-name {
+  flex: 1;
+  color: var(--ink);
+}
+
+.receipt-row-qty {
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  margin: 0 0.75rem;
+}
+
+.receipt-row-price {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.receipt-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 2px solid var(--ink);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.receipt-total .receipt-row-price {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 1.1rem;
+}
+
+.receipt-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.place-order-btn {
+  margin-top: 1.25rem;
+}
+
+/* ---------------------------------------------------------
+   ADD PRODUCT FORM
+   --------------------------------------------------------- */
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+  max-width: 420px;
+}
+
+/* ---------------------------------------------------------
+   RESPONSIVE
+   --------------------------------------------------------- */
+@media (max-width: 560px) {
+  .app-shell {
+    padding: 1.25rem 1rem 3rem;
   }
-  to {
-    transform: rotate(360deg);
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   }
 }
