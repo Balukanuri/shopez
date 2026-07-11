@@ -15,8 +15,8 @@ function App() {
   // DATA STATE
   // ----------------------------------------------------
   const [products, setProducts] = useState([]);
-  const [cart, setCart] = useState(null);       // NEW: holds current user's cart
-  const [orders, setOrders] = useState([]);     // NEW: holds current user's past orders
+  const [cart, setCart] = useState(null);
+  const [orders, setOrders] = useState([]);
 
   // Auth form state (used for both Login and Register forms)
   const [form, setForm] = useState({ name: "", email: "", password: "" });
@@ -40,7 +40,6 @@ function App() {
     setProducts(res.data);
   };
 
-  // NEW: fetch the logged-in user's cart
   const fetchCart = async () => {
     try {
       const res = await API.get("/cart", {
@@ -52,7 +51,6 @@ function App() {
     }
   };
 
-  // NEW: fetch the logged-in user's past orders
   const fetchOrders = async () => {
     try {
       const res = await API.get("/orders", {
@@ -64,15 +62,12 @@ function App() {
     }
   };
 
-  // Runs whenever the active page changes — auto-loads the data that page needs.
-  // TIP: if you add a new page later that needs its own data fetch on load,
-  // add another "if (page === '...')" line here.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (page === "products") fetchProducts();
     if (page === "cart" && token) fetchCart();
     if (page === "orders" && token) fetchOrders();
   }, [page]);
+
   // ----------------------------------------------------
   // AUTH HANDLERS
   // ----------------------------------------------------
@@ -123,13 +118,9 @@ function App() {
   };
 
   // ----------------------------------------------------
-  // CART HANDLERS (NEW)
+  // CART HANDLERS
   // ----------------------------------------------------
 
-  // Adds a product to the cart. Called from the "Add to Cart" button
-  // on each product card. Always adds quantity 1 — if you want a
-  // quantity selector later, change the hardcoded "1" below to a
-  // state value tied to an input field.
   const addToCart = async (productId) => {
     try {
       const res = await API.post(
@@ -144,10 +135,6 @@ function App() {
     }
   };
 
-  // Removes a single product line from the cart entirely.
-  // TIP: if you want a "decrease quantity by 1" button instead of full
-  // removal, you'd need a new backend route (e.g. PATCH /api/cart) —
-  // the current backend only supports add (increments) and full remove.
   const removeFromCart = async (productId) => {
     try {
       const res = await API.delete(`/cart/${productId}`, {
@@ -160,11 +147,9 @@ function App() {
   };
 
   // ----------------------------------------------------
-  // ORDER HANDLERS (NEW)
+  // ORDER HANDLERS
   // ----------------------------------------------------
 
-  // Converts the current cart into an order. Backend clears the cart
-  // automatically after this succeeds.
   const placeOrder = async () => {
     try {
       await API.post(
@@ -181,243 +166,321 @@ function App() {
     }
   };
 
+  const cartTotal = cart
+    ? cart.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
+    : 0;
+
   // ----------------------------------------------------
   // RENDER
   // ----------------------------------------------------
 
   return (
-    <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
-      <h1>ShopEZ</h1>
+    <div className="app-shell">
+      <header className="topbar">
+        <div className="brand">
+          Shop<span className="brand-accent">EZ</span>
+        </div>
+        <nav className="nav-pill">
+          <button
+            className={`nav-btn ${page === "login" ? "active" : ""}`}
+            onClick={() => setPage("login")}
+          >
+            Login
+          </button>
+          <button
+            className={`nav-btn ${page === "register" ? "active" : ""}`}
+            onClick={() => setPage("register")}
+          >
+            Register
+          </button>
+          <button
+            className={`nav-btn ${page === "products" ? "active" : ""}`}
+            onClick={() => setPage("products")}
+          >
+            Products
+          </button>
+          {token && (
+            <>
+              <button
+                className={`nav-btn ${page === "cart" ? "active" : ""}`}
+                onClick={() => setPage("cart")}
+              >
+                Cart
+              </button>
+              <button
+                className={`nav-btn ${page === "orders" ? "active" : ""}`}
+                onClick={() => setPage("orders")}
+              >
+                My Orders
+              </button>
+              <button
+                className={`nav-btn ${page === "addProduct" ? "active" : ""}`}
+                onClick={() => setPage("addProduct")}
+              >
+                Add Product
+              </button>
+            </>
+          )}
+        </nav>
+      </header>
 
-      {/* NAVIGATION BAR
-          TIP: add new nav buttons here in the same pattern if you add
-          more pages (e.g. "My Profile", "Seller Dashboard", etc.) */}
-      <nav style={{ marginBottom: "1rem" }}>
-        <button onClick={() => setPage("login")}>Login</button>{" "}
-        <button onClick={() => setPage("register")}>Register</button>{" "}
-        <button onClick={() => setPage("products")}>Products</button>{" "}
-        {token && (
-          <>
-            <button onClick={() => setPage("cart")}>Cart</button>{" "}
-            <button onClick={() => setPage("orders")}>My Orders</button>{" "}
-            <button onClick={() => setPage("addProduct")}>Add Product</button>
-          </>
-        )}
-      </nav>
-
-      {/* ---------------- LOGIN PAGE ---------------- */}
       {page === "login" && (
-        <form onSubmit={handleLogin}>
-          <h2>Login</h2>
-          <input
-            placeholder="Email"
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-          />
-          <br />
-          <input
-            placeholder="Password"
-            type="password"
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
-          />
-          <br />
-          <button type="submit">Login</button>
-        </form>
+        <div className="auth-page">
+          <form className="auth-card" onSubmit={handleLogin}>
+            <h2 className="page-title">Log in</h2>
+            <label className="field">
+              <span>Email</span>
+              <input
+                type="email"
+                placeholder="you@example.com"
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+              />
+            </label>
+            <label className="field">
+              <span>Password</span>
+              <input
+                placeholder="••••••••"
+                type="password"
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+              />
+            </label>
+            <button className="btn btn-primary btn-block" type="submit">
+              Log in
+            </button>
+          </form>
+        </div>
       )}
 
-      {/* ---------------- REGISTER PAGE ---------------- */}
       {page === "register" && (
-        <form onSubmit={handleRegister}>
-          <h2>Register</h2>
-          <input
-            placeholder="Name"
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-          />
-          <br />
-          <input
-            placeholder="Email"
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-          />
-          <br />
-          <input
-            placeholder="Password"
-            type="password"
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
-          />
-          <br />
-          <button type="submit">Register</button>
-        </form>
+        <div className="auth-page">
+          <form className="auth-card" onSubmit={handleRegister}>
+            <h2 className="page-title">Create account</h2>
+            <label className="field">
+              <span>Name</span>
+              <input
+                placeholder="Your name"
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
+            </label>
+            <label className="field">
+              <span>Email</span>
+              <input
+                type="email"
+                placeholder="you@example.com"
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+              />
+            </label>
+            <label className="field">
+              <span>Password</span>
+              <input
+                placeholder="••••••••"
+                type="password"
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+              />
+            </label>
+            <button className="btn btn-primary btn-block" type="submit">
+              Register
+            </button>
+          </form>
+        </div>
       )}
 
-      {/* ---------------- PRODUCTS PAGE ---------------- */}
       {page === "products" && (
         <div>
-          <h2>Products</h2>
-          {products.length === 0 && <p>No products yet.</p>}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+          <h2 className="page-title">Products</h2>
+          {products.length === 0 && (
+            <div className="empty-state">
+              <p>No products yet.</p>
+              {token && (
+                <button className="btn btn-ghost" onClick={() => setPage("addProduct")}>
+                  Add the first one
+                </button>
+              )}
+            </div>
+          )}
+          <div className="product-grid">
             {products.map((p) => (
-              <div
-                key={p._id}
-                style={{ border: "1px solid #ccc", padding: "1rem", width: "200px" }}
-              >
-                <img src={p.image} alt={p.name} width="100%" />
-                <h3>{p.name}</h3>
-                <p>{p.description}</p>
-                <p>₹{p.price}</p>
-                <p>Stock: {p.stock}</p>
-                {/* NEW: Add to Cart button — only shown when logged in */}
-                {token && (
-                  <button onClick={() => addToCart(p._id)}>Add to Cart</button>
-                )}
-              </div>
+              <article className="product-card" key={p._id}>
+                <div className="product-media">
+                  <img src={p.image} alt={p.name} />
+                </div>
+                <div className="product-body">
+                  <h3 className="product-name">{p.name}</h3>
+                  <p className="product-desc">{p.description}</p>
+                  <div className="product-meta">
+                    <span className="price">₹{p.price}</span>
+                    <span className={`stock-badge ${p.stock < 5 ? "low" : ""}`}>
+                      {p.stock} in stock
+                    </span>
+                  </div>
+                  {token && (
+                    <button className="btn btn-primary btn-block" onClick={() => addToCart(p._id)}>
+                      Add to Cart
+                    </button>
+                  )}
+                </div>
+              </article>
             ))}
           </div>
         </div>
       )}
 
-      {/* ---------------- ADD PRODUCT PAGE ---------------- */}
       {page === "addProduct" && (
-        <form onSubmit={handleAddProduct}>
-          <h2>Add Product</h2>
-          <input
-            placeholder="Name"
-            onChange={(e) =>
-              setProductForm({ ...productForm, name: e.target.value })
-            }
-          />
-          <br />
-          <input
-            placeholder="Description"
-            onChange={(e) =>
-              setProductForm({ ...productForm, description: e.target.value })
-            }
-          />
-          <br />
-          <input
-            placeholder="Price"
-            onChange={(e) =>
-              setProductForm({ ...productForm, price: e.target.value })
-            }
-          />
-          <br />
-          <input
-            placeholder="Category"
-            onChange={(e) =>
-              setProductForm({ ...productForm, category: e.target.value })
-            }
-          />
-          <br />
-          <input
-            placeholder="Stock"
-            onChange={(e) =>
-              setProductForm({ ...productForm, stock: e.target.value })
-            }
-          />
-          <br />
-          <input
-            placeholder="Image URL"
-            onChange={(e) =>
-              setProductForm({ ...productForm, image: e.target.value })
-            }
-          />
-          <br />
-          <button type="submit">Add Product</button>
-        </form>
+        <div>
+          <h2 className="page-title">Add Product</h2>
+          <form className="form-card" onSubmit={handleAddProduct}>
+            <label className="field">
+              <span>Name</span>
+              <input
+                placeholder="Product name"
+                onChange={(e) =>
+                  setProductForm({ ...productForm, name: e.target.value })
+                }
+              />
+            </label>
+            <label className="field">
+              <span>Description</span>
+              <input
+                placeholder="Short description"
+                onChange={(e) =>
+                  setProductForm({ ...productForm, description: e.target.value })
+                }
+              />
+            </label>
+            <label className="field">
+              <span>Price (₹)</span>
+              <input
+                placeholder="0"
+                onChange={(e) =>
+                  setProductForm({ ...productForm, price: e.target.value })
+                }
+              />
+            </label>
+            <label className="field">
+              <span>Category</span>
+              <input
+                placeholder="e.g. Electronics"
+                onChange={(e) =>
+                  setProductForm({ ...productForm, category: e.target.value })
+                }
+              />
+            </label>
+            <label className="field">
+              <span>Stock</span>
+              <input
+                placeholder="0"
+                onChange={(e) =>
+                  setProductForm({ ...productForm, stock: e.target.value })
+                }
+              />
+            </label>
+            <label className="field">
+              <span>Image URL</span>
+              <input
+                placeholder="https://..."
+                onChange={(e) =>
+                  setProductForm({ ...productForm, image: e.target.value })
+                }
+              />
+            </label>
+            <button className="btn btn-primary btn-block" type="submit">
+              Add Product
+            </button>
+          </form>
+        </div>
       )}
 
-      {/* ---------------- CART PAGE (NEW) ---------------- */}
       {page === "cart" && (
         <div>
-          <h2>My Cart</h2>
-          {(!cart || cart.items.length === 0) && <p>Cart is empty.</p>}
+          <h2 className="page-title">My Cart</h2>
 
-          {cart &&
-            cart.items.map((item) => (
-              <div
-                key={item._id}
-                style={{
-                  border: "1px solid #ccc",
-                  padding: "1rem",
-                  marginBottom: "0.5rem",
-                }}
-              >
-                <p>
-                  {item.product.name} — Qty: {item.quantity} — ₹
-                  {item.product.price * item.quantity}
-                </p>
-                <button onClick={() => removeFromCart(item.product._id)}>
-                  Remove
-                </button>
-              </div>
-            ))}
+          {(!cart || cart.items.length === 0) && (
+            <div className="empty-state">
+              <p>Your cart is empty.</p>
+              <button className="btn btn-ghost" onClick={() => setPage("products")}>
+                Browse products
+              </button>
+            </div>
+          )}
 
           {cart && cart.items.length > 0 && (
-            <button onClick={placeOrder} style={{ marginTop: "1rem" }}>
-              Place Order
-            </button>
+            <div className="receipt-list">
+              <div className="receipt-card">
+                {cart.items.map((item) => (
+                  <div className="receipt-row" key={item._id}>
+                    <span className="receipt-row-name">{item.product.name}</span>
+                    <span className="receipt-row-qty">×{item.quantity}</span>
+                    <span className="receipt-row-price">
+                      ₹{item.product.price * item.quantity}
+                    </span>
+                    <div className="receipt-actions">
+                      <button
+                        className="btn-text"
+                        onClick={() => removeFromCart(item.product._id)}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                <div className="receipt-total">
+                  <span>Total</span>
+                  <span className="receipt-row-price">₹{cartTotal}</span>
+                </div>
+
+                <button
+                  className="btn btn-primary btn-block place-order-btn"
+                  onClick={placeOrder}
+                >
+                  Place Order
+                </button>
+              </div>
+            </div>
           )}
         </div>
       )}
 
-      {/* ---------------- ORDERS PAGE (NEW) ---------------- */}
       {page === "orders" && (
         <div>
-          <h2>My Orders</h2>
-          {orders.length === 0 && <p>No orders yet.</p>}
+          <h2 className="page-title">My Orders</h2>
 
-          {orders.map((order) => (
-            <div
-              key={order._id}
-              style={{
-                border: "1px solid #ccc",
-                padding: "1rem",
-                marginBottom: "0.5rem",
-              }}
-            >
-              <p>Order ID: {order._id}</p>
-              <p>Total: ₹{order.totalAmount}</p>
-              <p>Status: {order.status}</p>
-              <ul>
-                {order.items.map((item) => (
-                  <li key={item._id}>
-                    {item.product.name} × {item.quantity} — ₹{item.price}
-                  </li>
-                ))}
-              </ul>
+          {orders.length === 0 && (
+            <div className="empty-state">
+              <p>No orders yet.</p>
+              <button className="btn btn-ghost" onClick={() => setPage("products")}>
+                Start shopping
+              </button>
             </div>
-          ))}
+          )}
+
+          <div className="receipt-list">
+            {orders.map((order) => (
+              <div className="receipt-card" key={order._id}>
+                <div className="receipt-header">
+                  <span className="receipt-id">#{order._id}</span>
+                  <span className={`status-badge status-${order.status}`}>
+                    {order.status}
+                  </span>
+                </div>
+
+                {order.items.map((item) => (
+                  <div className="receipt-row" key={item._id}>
+                    <span className="receipt-row-name">{item.product.name}</span>
+                    <span className="receipt-row-qty">×{item.quantity}</span>
+                    <span className="receipt-row-price">₹{item.price}</span>
+                  </div>
+                ))}
+
+                <div className="receipt-total">
+                  <span>Total</span>
+                  <span className="receipt-row-price">₹{order.totalAmount}</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
-
-      {/*
-        FUTURE ADDITIONS — where to plug things in:
-
-        1. SELLER DASHBOARD PAGE
-           - Add a new page string e.g. "sellerDashboard"
-           - Add a nav button (only shown if user.role === "seller")
-           - Fetch products where seller === current user id
-           - Add Edit/Delete buttons per product
-
-        2. EDIT PRODUCT
-           - Add an "editingProduct" state (holds product being edited or null)
-           - Reuse the Add Product form, pre-filled with editingProduct's data
-           - On submit, call API.put(`/products/${id}`, ...) instead of POST
-
-        3. QUANTITY SELECTOR IN CART
-           - Add a small number input next to each cart item
-           - Call addToCart again with a different quantity, or add a
-             new backend route to directly SET quantity instead of increment
-
-        4. USER PROFILE / LOGOUT
-           - Add a "Logout" button: setToken(null); setPage("login");
-           - Optionally store token in localStorage so refresh doesn't log out
-             (NOTE: skip localStorage inside Claude artifacts, but it's fine
-             in your real deployed app since this isn't an artifact)
-
-        5. ORDER STATUS UPDATES (seller side)
-           - Add a PATCH /api/orders/:id route on the backend to update status
-           - Add a dropdown in the seller dashboard to change "pending" ->
-             "confirmed" -> "shipped" -> "delivered"
-      */}
     </div>
   );
 }
